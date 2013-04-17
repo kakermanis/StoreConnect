@@ -9,14 +9,14 @@ It provides them access to the corporate chatter feed to exchange thoughts, idea
 
 From the user view point, Store Connect is a three page app:
 
-* ![Home/Chatter page](https://github.com/kakermanis/StoreConnect/1-Chatter.png)
+* ![Home/Chatter page](https://github.com/kakermanis/StoreConnect/blob/master/1-Chatter.png)
 	* Chatter feed using the [Connect in Apex API](http://developer.force.com/cookbook/recipe/connect-in-apex-pilot)
-* ![Knowledge](https://github.com/kakermanis/StoreConnect/2-Knowledge.png)
+* ![Knowledge](https://github.com/kakermanis/StoreConnect/blob/master/2-Knowledge.png)
 	* Search across and display all KB articles that the user has access to
 	* Ability to email link to Public Knowledge Base (PKB) article to customer
 	* Can capture and create a new customer record if they do not currently exist (Lead Creation)
 	* Fields displayed can be configured via Field Sets
-* ![Customers]((https://github.com/kakermanis/StoreConnect/3-Customer.png))
+* ![Customers]((https://github.com/kakermanis/StoreConnect/blob/master/3-Customer.png))
 	* Quick SOSL search across all contact fields
 	* Display of Field Set driven contact fields
 	
