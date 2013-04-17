@@ -1,0 +1,166 @@
+<!--
+
+// Copyright 2013, Kevin Akermanis - Sales Engineering, Salesforce.com Inc.
+// All rights reserved.
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//
+// - Redistributions of source code must retain the above copyright notice,
+//   this list of conditions and the following disclaimer.
+// - Redistributions in binary form must reproduce the above copyright notice,
+//   this list of conditions and the following disclaimer in the documentation
+//   and/or other materials provided with the distribution.
+// - Neither the name of the salesforce.com nor the names of its contributors
+//   may be used to endorse or promote products derived from this software
+//   without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+// IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
+// FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+// DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+// SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+// CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+// OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+-->
+<apex:page controller="StoreConnectSetup" action="{!checkDefaultSetup}" showHeader="true" sidebar="false" >
+        <script src="{!$Resource.storeConnect_jQuery182_min_js}"></script>      
+        <link rel="stylesheet" href="{!URLFOR($Resource.STORE_CONNECT_Colour_Picker, 'jquery.miniColors.css')}" />             
+        <script src="{!URLFOR($Resource.STORE_CONNECT_Colour_Picker, 'jquery.miniColors.js')}"></script>   
+        
+    <script>
+        
+        $(document).ready( function() {            
+            var consoleTimeout;            
+            // Display the results of the change callback on any minicolors input
+            $('INPUT[type=minicolors]').on('change', function() {                
+                var input = $(this),
+                    hex = input.val(),
+                    opacity = input.attr('data-opacity'),
+                    text;
+                                    
+                // Generate text to show in console
+                text = hex ? hex : 'transparent';
+                if( opacity ) text += ', ' + opacity;
+                text += ' / ' + $.minicolors.rgbString(input);
+
+                // This part goes and puts the hex value into the hidden field                               
+                var hiddenFieldId = $(this).attr('hiddenFieldId').split(':').join('\\:');                                                                
+                var hiddenField = $('#'+hiddenFieldId);                               
+                hiddenField.val(hex.substr(1,hex.length));                                
+            }); 
+            
+           $('.replaceStaticResource').click(function() {
+                $(this).target = "_blank";
+                window.open('/' + $(this).attr('recordId') + '/e');
+                return false;
+           });                                                       
+        });                                        
+    </script>                
+         
+    <apex:form >
+        <apex:pageBlock >
+        <apex:pageMessages />
+        <apex:pageBlockButtons >
+            <apex:commandButton value="Save" action="{!saveCustomisations}"/>
+        </apex:pageBlockButtons>
+        
+        <apex:pageBlockSection title="Login Details" columns="2" collapsible="false">        
+                <apex:inputField value="{!customSettings.Login_Username__c}"/>                              
+                <apex:inputField value="{!customSettings.Login_Password__c}"/>                                                                                           
+        </apex:pageBlockSection>
+       
+        <apex:pageBlockSection title="Knowledge email settings" columns="2" collapsible="false">        
+                <apex:selectList value="{!customSettings.Case_Status__c}" size="1" required="true">
+                    <apex:selectOptions value="{!caseStatus}"/>
+                </apex:selectList> 
+                
+                <apex:selectList value="{!customSettings.Person_Account_Record_Type__c}" size="1" required="true">
+                    <apex:selectOptions value="{!personAccountRecTypes}"/>
+                </apex:selectList>                                                 
+
+                <apex:selectList value="{!customSettings.Case_Type__c}" size="1" required="true">
+                    <apex:selectOptions value="{!caseTypes}"/>
+                </apex:selectList>                                                                                                                                                            
+                
+                <apex:selectList value="{!customSettings.PKB_Site_Name__c}" size="1" required="true">
+                    <apex:selectOptions value="{!publicSites}"/>
+                </apex:selectList>                 
+                                                                                                                                                                                                                                                       
+                <apex:inputField value="{!customSettings.Case_Subject__c}"/>                 
+
+                                                               
+        </apex:pageBlockSection>        
+                
+        <apex:pageBlockSection title="Colours" columns="2" collapsible="false" >                                                        
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Navbar Border" for="nav_border"/>                    
+                    <input type="minicolors" name="nav_border" value="#{!customSettings.Navbar_Border__c}" hiddenFieldId="{!$Component.hidden_nav_border}"/>
+                </apex:pageBlockSectionItem>     
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Navbar Top" for="nav_top"/>                    
+                    <input type="minicolors" name="nav_top" value="#{!customSettings.Navbar_Top_Colour__c}" hiddenFieldId="{!$Component.hidden_nav_top}"/>
+                </apex:pageBlockSectionItem>  
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Navbar Bottom" for="nav_bottom"/>                    
+                    <input type="minicolors" name="nav_bottom" value="#{!customSettings.Navbar_Bottom_Colour__c}" hiddenFieldId="{!$Component.hidden_nav_bottom}"/>
+                </apex:pageBlockSectionItem>  
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Navbar Background" for="nav_background"/>                    
+                    <input type="minicolors" name="nav_background" value="#{!customSettings.Navbar_Default_Background_Colour__c}" hiddenFieldId="{!$Component.hidden_nav_background}"/>
+                </apex:pageBlockSectionItem>  
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Navbar Selected Page" for="nav_selected"/>                    
+                    <input type="minicolors" name="nav_selected" value="#{!customSettings.Navbar_Selected_Page__c}" hiddenFieldId="{!$Component.hidden_nav_selected}"/>
+                </apex:pageBlockSectionItem>  
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Navbar Text" for="nav_text"/>                    
+                    <input type="minicolors" name="nav_text" value="#{!customSettings.Navbar_Text_Colour__c}" hiddenFieldId="{!$Component.hidden_nav_text}"/>
+                </apex:pageBlockSectionItem>
+                                                
+            <apex:inputHidden value="{!customSettings.Navbar_Border__c}" id="hidden_nav_border"/>                 
+            <apex:inputHidden value="{!customSettings.Navbar_Top_Colour__c}" id="hidden_nav_top"/>                 
+            <apex:inputHidden value="{!customSettings.Navbar_Bottom_Colour__c}" id="hidden_nav_bottom"/>                 
+            <apex:inputHidden value="{!customSettings.Navbar_Default_Background_Colour__c}" id="hidden_nav_background"/>                                                     
+            <apex:inputHidden value="{!customSettings.Navbar_Selected_Page__c}" id="hidden_nav_selected"/>                             
+            <apex:inputHidden value="{!customSettings.Navbar_Text_Colour__c}" id="hidden_nav_text"/>                                                     
+        </apex:pageBlockSection> 
+        
+        <apex:pageBlockSection title="Icons" columns="2" collapsible="false" >         
+                <apex:pageBlockSectionItem >   
+                    <apex:outputLabel value="Login Icon" for="login_icon"/>
+                    <button class="replaceStaticResource" recordId="{!loginIcon.ID}" name="login_icon" type="button" >Change Login Icon</button> 
+                </apex:pageBlockSectionItem>         
+
+                <apex:pageBlockSectionItem >                   
+                <apex:outputLabel value="Bookmark Icon" for="bookmark_icon"/>
+                    <button class="replaceStaticResource" recordId="{!favIcon.ID}" name="bookmark_icon" type="button">Change Bookmark Icon</button> 
+                </apex:pageBlockSectionItem>                  
+
+                <apex:pageBlockSectionItem >   
+                <apex:outputLabel value="App Icon" for="app_icon"/>
+                    <button class="replaceStaticResource" recordId="{!appIcon.ID}" name="app_icon" type="button">Change App Icon</button> 
+                </apex:pageBlockSectionItem>                 
+                
+                <apex:pageBlockSectionItem >   
+                <apex:outputLabel value="Search Icon" for="search_icon"/>
+                    <button class="replaceStaticResource" recordId="{!searchIcon.ID}" name="search_icon" type="button">Change Search Icon</button> 
+                </apex:pageBlockSectionItem> 
+                
+                <apex:pageBlockSectionItem >   
+                <apex:outputLabel value="Customer Icon" for="customer_icon"/>
+                    <button class="replaceStaticResource" recordId="{!customerIcon.ID}" name="customer_icon" type="button">Change Customer Icon</button> 
+                </apex:pageBlockSectionItem>                                                                     
+        </apex:pageBlockSection>                                                                                                                 
+        </apex:pageBlock>
+    </apex:form>                
+</apex:page>

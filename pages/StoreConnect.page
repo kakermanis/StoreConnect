@@ -1,0 +1,133 @@
+<!--
+
+// Copyright 2013, Kevin Akermanis - Sales Engineering, Salesforce.com Inc.
+// All rights reserved.
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//
+// - Redistributions of source code must retain the above copyright notice,
+//   this list of conditions and the following disclaimer.
+// - Redistributions in binary form must reproduce the above copyright notice,
+//   this list of conditions and the following disclaimer in the documentation
+//   and/or other materials provided with the distribution.
+// - Neither the name of the salesforce.com nor the names of its contributors
+//   may be used to endorse or promote products derived from this software
+//   without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+// IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
+// FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+// DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+// SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+// CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+// OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+-->
+<apex:page cache="false" standardStylesheets="false"
+    sidebar="false"
+    showHeader="false" showChat="false"
+    controller="StoreConnectController" docType="html-5.0">
+    
+    <head>
+        <title>{!$Organization.name} Store Connect</title>                               
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>             
+        <link href="{!URLFOR($Resource.storeConnect_bootstrap, 'css/bootstrap.min.css')}" rel="stylesheet" media="screen"/>                                
+        <link href="{!URLFOR($Resource.storeConnect_bootstrap, 'css/bootstrap-responsive.css')}" rel="stylesheet"/>      
+        
+        <style>
+            body {
+                padding-top:60px;
+                padding-bottom: 40px;
+            }
+        </style>                        
+        <link href="{!$Resource.storeConnect_bootstrap_style_override}" rel="stylesheet" />
+        
+        <apex:include pageName="StoreConnectStyleOverrides" />
+                                                                  
+        <meta name="apple-mobile-web-app-capable" content="yes"/>
+        <link rel="icon" type="image/png" href="{$Resource.StoreConnect_Favico}"/>
+        <link rel="apple-touch-icon" href="{!$Resource.StoreConnectAppIcon}" />        
+                                
+        <style>
+
+        .navbar .nav,
+        .navbar .nav > li {
+            float:none;
+            display:inline-block;
+            *display:inline; /* ie7 fix */
+            *zoom:1; /* hasLayout ie7 trigger */
+            vertical-align: top;
+        }
+
+         .navbar-inner {
+            text-align:center;
+        }
+        
+        #nav.affix {
+            position: fixed;
+            top: 0;
+            #width: 100%
+        }
+        
+
+
+                                                    
+        </style>        
+    </head>
+    <body>   
+        <script src="{!$Resource.storeConnect_jQuery182_min_js}"></script>
+        <script src="{!URLFOR($Resource.storeConnect_bootstrap, 'js/bootstrap.min.js')}"></script>   
+        <div class="container">
+            <div id="nav-wrapper row span12">
+                <div id="nav" class="navbar navbar-fixed-top">
+                  <div class="navbar-inner">
+                      <div class="container">
+                        <ul class="nav">
+                          <li id="ChatterLink" ><a href="#" class="navLink" targetPage="/apex/StoreConnectChatter">Chatter</a></li>
+                          <li id="KnowledgeLink"><a href="#" class="navLink" targetPage="/apex/StoreConnectKnowledge">Knowledge</a></li>
+                          <li id="CustomersLink"><a href="#" class="navLink" targetPage="/apex/StoreConnectCustomers">Customers</a></li>
+                        </ul>
+                      </div>
+                  </div>     
+                 </div> 
+            </div>                             
+            <div id="container">        
+                <apex:insert name="pageContent" />                                                                                                              
+            </div>          
+        </div> 
+        
+        <script>
+        
+            $('#nav-wrapper').height($("#nav").height());
+            $('#nav').affix({
+                offset: $('#nav').position()
+            });    
+            
+            
+            var highlightCurrentPageLink = new function() {
+                var currentPage = '{!currentPageName}';
+                var pageLinkId = currentPage + 'Link';                
+                //console.debug('Current Page ID to find is: ' + pageLinkId);                
+                $('#'+pageLinkId).addClass('active');
+            }
+            
+            var setupNavLinks = new function() {                  
+                $(".navLink").on("click", function(event){
+                    event.preventDefault();
+                    var targetUrl = $(this).attr('targetPage');                                                        
+                    window.location = targetUrl; 
+                });                 
+                                            
+            }
+    
+            $(document).ready(function() {
+                highlightCurrentPageLink;
+                setupNavLinks;
+            });                                               
+        </script>              
+    </body>
+</apex:page>

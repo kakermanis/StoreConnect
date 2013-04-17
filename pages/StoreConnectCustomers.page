@@ -1,0 +1,265 @@
+<!--
+
+// Copyright 2013, Kevin Akermanis - Sales Engineering, Salesforce.com Inc.
+// All rights reserved.
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//
+// - Redistributions of source code must retain the above copyright notice,
+//   this list of conditions and the following disclaimer.
+// - Redistributions in binary form must reproduce the above copyright notice,
+//   this list of conditions and the following disclaimer in the documentation
+//   and/or other materials provided with the distribution.
+// - Neither the name of the salesforce.com nor the names of its contributors
+//   may be used to endorse or promote products derived from this software
+//   without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+// IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
+// FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+// DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+// SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+// CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+// OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+-->
+<apex:page cache="false" standardStylesheets="false"
+    sidebar="false"
+    showHeader="false" showChat="false"
+    controller="StoreConnectCustomerController" docType="html-5.0">
+    <apex:composition template="StoreConnect">            
+        <apex:define name="pageContent">
+        
+    <style>        
+        .contactSearchList {
+            list-style: none;
+        }
+        
+        .contactContainer dl dt {
+            color: #5D5D5D;
+        }
+                
+        .contactContainer dl dd {
+            margin-left: 0px;
+            margin-bottom: 3px;
+            padding-bottom: 1px;
+            border-bottom:1px solid #F4F4F4;
+            color: #909090;            
+        } 
+        
+        
+        .customerSectionHeader {
+            padding-bottom: 5px;
+        }  
+        
+            .backSplash {
+                font-style: italic;
+            }
+            
+            .backSplash img {
+                height: 150px;
+                width: 150px;
+                display: block;
+                margin-left: auto;
+                margin-right: auto;                
+            }         
+             
+    </style>
+            
+        <apex:includeScript value="{!$Resource.storeConnect_iCanHaz}"/>
+                   
+        <div id="searchContainer" class="container">        
+            <apex:outputPanel layout="block" styleClass="row">
+                <div class="span8 offset4">                                      
+                <form class="form-search">
+                      <div class="input-append">
+                        <input id="searchTerm" type="text" class="span2 search-query warning" placeholder="Customer search..."/>
+                        <button class="btn customerSearchBtn"><i class="icon-search"></i> Search</button>
+                      </div> 
+                </form>                                                                                       
+                </div>
+            </apex:outputPanel>
+            
+            <div class="row span8 offset2 backSplash pagination-centered">            
+                <p>Search for customers using name, email, phone, etc...</p>            
+                <img src="{!$Resource.STORE_CONNECT_CUSTOMER_ICON}" class="img-rounded media-object"/>            
+            </div>            
+            
+            <div class="container searchResultWrapper hidden">
+                <div class="contactContainer row span8 offset2"></div>
+            </div>        
+        </div>                                
+        </apex:define>
+    </apex:composition>
+    
+    <!-- All iCanHaz / Mustache / Dynamic HTML templates will live in here -->
+    <div id="dynamicTemplates">  
+    
+        <script id="singleContact" type="text/html">           
+            {{#basicInfo}}
+            <div class="row span8">
+                <h4 class="customerSectionHeader">Customer Profile</h4>
+            </div>
+            <div class="row span4">
+                <dl class="basicInfo">
+                    <apex:repeat value="{!$ObjectType.Contact.FieldSets.STORE_CONNECT_CONTACT_BASIC_INFO}" var="f">
+                        <dt>{!f.Label}</dt>
+                        <dd>{{& {!f.FieldPath} }}</dd> 
+                    </apex:repeat>
+                </dl>
+            </div>
+            {{/basicInfo}}
+            
+            {{#socialInfo}}
+            <div class="row span8">            
+                <h4 class="customerSectionHeader">Social Profile</h4>
+            </div>
+            <div class="row span4">
+                <dl class="socialInfo">
+                    <apex:repeat value="{!$ObjectType.Contact.FieldSets.STORE_CONNECT_CONTACT_SOCIAL}" var="f">
+                        <dt>{!f.Label}</dt>
+                        <dd>{{& {!f.FieldPath}  }}</dd> 
+                    </apex:repeat>            
+                </dl>
+            </div>
+            {{/socialInfo}}
+            
+            {{#notes}}
+            <div class="row span8">
+                <h4 class="customerSectionHeader">General Notes</h4>
+            </div>
+            <div class="row span4">
+                <dl class="customerNotes">
+                    <apex:repeat value="{!$ObjectType.Contact.FieldSets.STORE_CONNECT_CONTACT_NOTES}" var="f">
+                        <dt>{!f.Label}</dt>
+                        <dd>{{& {!f.FieldPath}  }}</dd> 
+                    </apex:repeat>            
+                </dl>     
+            </div>            
+            {{/notes}}                                                                                   
+        </script>       
+        
+        <script id="contactList" type="text/html">     
+            <ul>
+            {{#contacts}}
+                <li><a class="searchResultItem" href="#" contactId="{{Id}}">
+                        <dl>
+                            <dt>{{FirstName}} {{LastName}}</dt>
+                            <dd>{{Email}}</dd>
+                        </dl>
+                    </a>
+                </li>
+            {{/contacts}}
+            </ul>                                                                                          
+        </script>            
+    </div> <!-- END iCanHaz templates -->
+    
+    <script>    
+    
+    
+    
+        function displaySinglePerson(result) {                                             
+            $(".contactContainer").removeClass("contactList");            
+            $(".contactContainer").addClass("contactSingle");                                      
+            var resultHtml = ich.singleContact(result);            
+            $('.contactContainer').html(resultHtml);           
+            $(".searchResultWrapper").removeClass("hidden");
+            $(".contactContainer").slideDown();                    
+        }   
+        
+        function singleContactLoadCallback(result, event) {
+            if (event.status) {        
+                displaySinglePerson(result);            
+            } else if (event.type === 'exception') {
+                console.log('Contact Load - REMOTING ERROR MSG: ' + event.message);                
+            } else {
+                console.log('Contact Load - Some other remoting issue...');
+            }        
+        }
+    
+        function contactSearchCallback(result, event) {
+            if (event.status) {                                                                                                                                                       
+                var resultHtml;                
+                // ----- STUBBED DATA -----                                    
+                //result = {contacts : [{contactId:"0039000000HTil6", firstName:"Adam", lastName:"Smith", email:"adam@smith.com"} ,{contactId:"0039000000HTil4", firstName:"Lauren", lastName:"Boyle", email:"lboyle@mailinator.com"} ,{contactId:"0039000000HTilW", firstName:"Sam", lastName:"Bedford", email:"sam@bedford.com"}]};
+                // ----- END STUBBED DATA -----
+                resultHtml = ich.contactList(result);
+                $(".contactContainer").addClass("contactList");
+                
+                // else if just a single person found
+                    // iCanHaz - singleContact
+                    //resultHtml = ich.singleContact(result);
+                    //$(".contactContainer").addClass("contactSingle");
+                                                             
+                $('.contactContainer').html(resultHtml);
+                setupPersonList();                                                                                
+                $(".searchResultWrapper").removeClass("hidden");
+                $(".contactContainer").slideDown();
+            } else if (event.type === 'exception') {
+                console.log('Contact search - REMOTING ERROR MSG: ' + event.message);
+            } else {
+                alert('callback some other issue...');
+            }                
+        }
+        
+        
+        function doPersonSearch(searchTerm) {                
+            Visualforce.remoting.Manager.invokeAction(
+                '{!$RemoteAction.StoreConnectCustomerController.doSearch}', 
+                searchTerm,
+                contactSearchCallback, 
+                {escape: false}
+            );        
+        
+        }
+        
+        function setupPersonList() {
+                $(".searchResultItem").on("click", function(event){ 
+                    event.preventDefault();                                                
+                    var contactId = $(this).attr('contactId');
+                    console.log('Going to load a single customer record with ID: ' + contactId);                    
+                    loadSinglePerson(contactId);
+                });
+                $(".contactContainer ul").addClass('contactSearchList');             
+        }
+        
+        function loadSinglePerson(contactId) {        
+            console.log('loading a single person: ' + contactId);
+            $(".contactContainer").slideUp();                    
+            Visualforce.remoting.Manager.invokeAction(
+                '{!$RemoteAction.StoreConnectCustomerController.loadContactRecord}', 
+                contactId,
+                singleContactLoadCallback, 
+                {escape: false}
+            );
+        }
+        
+            var setupNavLinks = new function() {                  
+                $(".navLink").on("click", function(event){
+                    event.preventDefault();
+                    var targetUrl = $(this).attr('targetPage');                                                        
+                    window.location = targetUrl; 
+                });                                    
+            }
+            
+            $(document).ready(function() {
+                setupNavLinks;
+                
+                $(".customerSearchBtn").on("click", function(event){
+                    event.preventDefault();                                                            
+                    var searchTerm = $("#searchTerm").val();
+                    
+                    if ('' != searchTerm ) {
+                        $(".backSplash").slideUp();                                                                                                                    
+                        doPersonSearch(searchTerm);                    
+                    } else {
+                    
+                    }                    
+                });                                                                                
+            });                     
+    </script>
+</apex:page>

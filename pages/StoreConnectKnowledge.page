@@ -1,0 +1,286 @@
+<!--
+
+// Copyright 2013, Kevin Akermanis - Sales Engineering, Salesforce.com Inc.
+// All rights reserved.
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//
+// - Redistributions of source code must retain the above copyright notice,
+//   this list of conditions and the following disclaimer.
+// - Redistributions in binary form must reproduce the above copyright notice,
+//   this list of conditions and the following disclaimer in the documentation
+//   and/or other materials provided with the distribution.
+// - Neither the name of the salesforce.com nor the names of its contributors
+//   may be used to endorse or promote products derived from this software
+//   without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+// IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
+// FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+// DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+// SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+// CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+// OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+-->
+<apex:page controller="StoreConnectKnowledgeController"
+    cache="false" standardStylesheets="false"
+    sidebar="false"
+    showHeader="false" showChat="false">        
+    <apex:composition template="StoreConnect" >            
+        <apex:define name="pageContent">        
+        <apex:includeScript value="{!$Resource.storeConnect_iCanHaz}"/>        
+        
+        
+        <style>
+            .kbSectionHeader {
+                font-weight:bold;    
+            }
+            
+            .kbSectionContent {
+            
+            } 
+            
+            .kbSummary {
+                display: none;
+            }
+            
+            .kbUrl {
+                display: none;
+            }
+            
+            .backSplash {
+                font-style: italic;
+            }
+            
+            .backSplash img {
+                height: 150px;
+                width: 150px;
+                display: block;
+                margin-left: auto;
+                margin-right: auto;                
+            }
+            
+            .articleItem {
+                    padding-bottom: 3px;
+                    border-bottom: 1px solid #d0d0d0;
+                    margin-bottom: 5px;
+            }
+            
+            .modal-form {
+                margin-bottom: 0;
+            }      
+        </style>
+               
+            <div id="KbSearchBox" class="row">
+                <div class="span8 offset4">
+                <form class="form-search">
+                      <div class="input-append">
+                        <input id="searchTerm" type="text" class="span2 search-query" value="{!searchTerm}" placeholder="Article search..."/>                      
+                        <button class="btn KbSearchBtn"><i class="icon-search"></i> Search</button>                                               
+                      </div> 
+                </form>  
+                </div>                                                                     
+            </div>
+            
+            <apex:outputPanel layout="block" styleClass="pagination-centered row span8 offset2 backSplash" rendered="{!NOT(searchTermDefined)}">            
+                <p>Search for Knowledge articles using just a few words.</p>            
+                <img src="{!$Resource.STORE_CONNECT_SEARCH_ICON}" class="img-rounded media-object"/>            
+            </apex:outputPanel>
+                                                        
+            <apex:outputPanel id="KbSearchResults" layout="block" styleClass="row span10 offset1" rendered="{!searchTermDefined}">
+                <ul class="nav nav-list articleResults">
+                <knowledge:articleList articleVar="article" hasMoreVar="false" pageSize="10" keyword="{!searchTerm}">
+                    <li class="articleItem"><a class="kbSearchLink" articleId="{!article.id}" articleType="{!article.articleTypeName}" articleSummary="{!article.Summary}" href="#">{!article.title}</a></li>
+                </knowledge:articleList>    
+                </ul>            
+            </apex:outputPanel>     
+                                                    
+            <div class="container kbArticleDetail hidden">
+                <div class="row">
+                <ul class="nav nav-pills pull-right">
+                  <li><a href="#" class="btn btn-mini closeArticleBtn">Close</a></li>
+                  <li><a class="btn btn-danger btn-mini" href="#emailArticleModal" role="button" data-toggle="modal">email Article</a></li>
+                </ul>
+                </div>           
+            
+                <div class="articleContent row span10 offset1">
+                </div> 
+                
+                <div class="row">                
+                <ul class="nav nav-pills pull-right">
+                  <li><a href="#" class="btn btn-mini closeArticleBtn">Close</a></li>
+                  <li><a class="btn btn-danger btn-mini" href="#emailArticleModal" role="button" data-toggle="modal">email Article</a></li>
+                </ul>
+                </div>                                         
+            </div>
+            
+            <div class="row span8 offset2 hidden alert alert-success" id="emailSuccessMsgBox">
+                <h3>Success!!!</h3>
+                <p>We just emailed you a link to the Knowledge Article</p>
+            </div>  
+            
+            
+            <div id="emailArticleModal" class="modal hide fade" tabindex="-1" role="dialog">                
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4>eMail Article</h4>
+                  </div>
+                  <div class="modal-body">
+                      <fieldset>
+                        <input id="emailAddress" name="email" type="email" placeholder="email address"/>
+                      </fieldset>
+                      
+                      <fieldset id="contactNotFound" class="hidden">
+                          <div class="alert alert-error">
+                          <p>Sorry we could not find you, could we have a few more details?</p>    
+                          </div>
+                          <input id="firstname" name="firstname" type="text" placeholder="First Name"/>
+                          <input id="lastname" name="lastname" type="text" placeholder="Last Name"/>      
+                          <input id="mobile" name="mobile" type="tel" placeholder="Mobile"/>                              
+                      </fieldset>                 
+                  </div>
+                  <div class="form-actions modal-footer">
+                    <button class="btn btn-mini" data-dismiss="modal" aria-hidden="true">Cancel</button>
+                    <button type="submit" class="btn btn-danger btn-mini emailArticleBtn">Send</button>
+                  </div>                        
+            </div> <!-- end email modal window -->
+                        
+            <!-- All iCanHaz / Mustache / Dynamic HTML templates will live in here -->
+            <div id="dynamicTemplates">  
+                      
+                <script id="kbArticleSection" type="text/html">     
+                    <h4>{{ articleTitle }}</h4>
+                    <div class="kbSummary">{{articleSummary}}</div>
+                    <div class="kbUrl">{{articleUrl}}</div>
+                    <input type="hidden" class="loadedArticleId" value="{{articleId}}"/>
+                    {{#sections}}         
+                    <div class="kbSectionHeader">
+                        <p>{{sectionHeader}}</p>
+                    </div>                    
+                    <div class="kbSectionContent">
+                        <p>{{& sectionContent }}</p>
+                    </div>                    
+                    {{/sections}}                                                                                          
+                </script>                
+            
+            </div> <!-- END iCanHaz templates -->                                                                    
+            <script>                                                                                       
+                 // *** ALL functions related to SEARCHING and loading articles are here                                    
+                    function articleLoadCallBack(result, event) {                        
+                        if (event.status) {                                                                                                                                                                       
+                            var articleHtml = ich.kbArticleSection(result);
+                            $('.articleContent').html(articleHtml);                                                                                 
+                            $(".kbArticleDetail").removeClass("hidden");
+                            $(".articleResults").slideUp();
+                            $(".kbArticleDetail").slideDown();                            
+                        } else if (event.type === 'exception') {
+                            alert('callback exception');
+                            console.log('REMOTING ERROR MSG: ' + event.message);
+                        } else {
+                            alert('callback some other issue...');
+                        }                                                                                  
+                    }            
+                    
+                    
+                    /**
+                     *
+                     * Wrapper for calling the APEX Remoting function
+                     *
+                     **/               
+                    function loadArticleData(articleId, articleType) {
+                        Visualforce.remoting.Manager.invokeAction(
+                            '{!$RemoteAction.StoreConnectKnowledgeController.loadKbArticle}', 
+                            articleId, articleType, 
+                            articleLoadCallBack, 
+                            {escape: false}
+                        );                                                                                                                    
+                    }
+                    
+                                                            
+                 // *** ALL Functions related to EMAILING articles are under here                    
+                    function emailArticleCallBack(result, event) {
+                        console.log('Back from email article.... with result: ' + result + ' event message: ' + event.message);                        
+                        if (result == 'success') {
+                        // if success
+                            // 1 - close modal window
+                            // 2- clear search results and article
+                            // 3 - display email sent confirmation msg... 
+                            $("#emailSuccessMsgBox").removeClass('hidden');                       
+                            $(".articleResults").hide();
+                            $("#emailArticleModal").modal('toggle');
+                            $(".kbArticleDetail").hide();
+                            $("#contactNotFound").addClass('hidden');                                                                                    
+                        } else {
+                            // if not-found show the second part of the form - notFound
+                            console.log('');
+                            $("#contactNotFound").removeClass('hidden');
+                            $("#contactNotFound").slideDown();
+                            $(".emailArticleBtn").addClass('fullContactDetail');
+                        }  
+                    }
+                    
+                    function emailArticle(searchTerm, articleId, emailAddress, firstName, lastName, mobile) {
+                        Visualforce.remoting.Manager.invokeAction(
+                            '{!$RemoteAction.StoreConnectKnowledgeController.emailArticle}', 
+                            searchTerm, emailAddress, articleId, firstName, lastName, mobile, 
+                            emailArticleCallBack, 
+                            {escape: false}
+                        );                                                                                                                    
+                    }                    
+
+                                
+                 // *** ALL setup and page init functions are under here  
+                    function setupNav() {                  
+                        $(".navLink").on("click", function(event){
+                            event.preventDefault();
+                            var targetUrl = $(this).attr('targetPage');                                                        
+                            window.location = targetUrl; 
+                        });                                                                     
+                    }                       
+                                
+                    $(document).ready(function() {
+                        setupNav();
+                                                
+                        // Knowledge search and load events
+                        $(".KbSearchBtn").on("click", function(event){
+                            event.preventDefault();                                                            
+                            var searchTerm = $("#searchTerm").val();
+                            $(".backSplash").slideUp();                                                                                                
+                            window.location = '/apex/StoreConnectKnowledge?searchTerm='+searchTerm; 
+                        }); 
+                        
+                        $(".kbSearchLink").on("click", function(event){
+                            event.preventDefault();
+                            var clickedArticleId = $(this).attr('articleId');
+                            var clickedArticleType = $(this).attr('articleType');                                                                                                                
+                            loadArticleData(clickedArticleId, clickedArticleType);
+                        });
+                                                
+                        $(".closeArticleBtn").on("click", function(event){
+                            event.preventDefault();                                                            
+                            $(".kbArticleDetail").slideUp();                           
+                            $(".articleResults").slideDown(); 
+                        });  
+                                                
+                        //Emailing article events                        
+                        $(".emailArticleBtn").on("click", function(event){
+                            // if contact is found just package up and send out the URL to the article
+                            // if the contact is NOT found, capture First / Last name, mobile number and whether theyre an existing customer                            
+                            event.preventDefault();
+                            var loadedArticle = $(".loadedArticleId").val();
+                            var emailAddy = $("#emailAddress").val();
+                            var firstName = $("#firstname").val();
+                            var lastName = $("#lastname").val();
+                            var mobile = $("#mobile").val();
+                            emailArticle('{!searchTerm}', loadedArticle, emailAddy, firstName,lastName,mobile);
+                        });                                                                                                                                                                                                             
+                    });                                                                                                     
+            </script>                                                
+        </apex:define>                       
+    </apex:composition>   
+</apex:page>

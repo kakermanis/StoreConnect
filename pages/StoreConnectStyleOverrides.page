@@ -1,0 +1,205 @@
+<!--
+
+// Copyright 2013, Kevin Akermanis - Sales Engineering, Salesforce.com Inc.
+// All rights reserved.
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//
+// - Redistributions of source code must retain the above copyright notice,
+//   this list of conditions and the following disclaimer.
+// - Redistributions in binary form must reproduce the above copyright notice,
+//   this list of conditions and the following disclaimer in the documentation
+//   and/or other materials provided with the distribution.
+// - Neither the name of the salesforce.com nor the names of its contributors
+//   may be used to endorse or promote products derived from this software
+//   without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+// IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
+// FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+// DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+// SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+// CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+// OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+-->
+<apex:page showHeader="false" sidebar="false" 
+            showChat="false" standardStylesheets="false" 
+            controller="StoreConnectStyleOverrideController">
+            
+            
+    <style>    
+    <!-- NAVbar primary colours -->
+    
+        .navbar-inner {
+          min-height: 40px;
+          padding-left: 20px;
+          padding-right: 20px;
+          background-color: #{!customSettings.Navbar_Default_Background_Colour__c};
+          background-image: -moz-linear-gradient(top, #{!customSettings.Navbar_Top_Colour__c}, #{!customSettings.Navbar_Bottom_Colour__c});
+          background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#{!customSettings.Navbar_Top_Colour__c}), to(#{!customSettings.Navbar_Bottom_Colour__c}));
+          background-image: -webkit-linear-gradient(top, #{!customSettings.Navbar_Top_Colour__c}, #{!customSettings.Navbar_Bottom_Colour__c});
+          background-image: -o-linear-gradient(top, #{!customSettings.Navbar_Top_Colour__c}, #{!customSettings.Navbar_Bottom_Colour__c});
+          background-image: linear-gradient(to bottom, #{!customSettings.Navbar_Top_Colour__c}, #{!customSettings.Navbar_Bottom_Colour__c});
+          background-repeat: repeat-x;
+          filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff{!customSettings.Navbar_Bottom_Colour__c}', endColorstr='#ff{!customSettings.Navbar_Top_Colour__c}', GradientType=0);
+          border: 1px solid #{!customSettings.Navbar_border__c};
+          -webkit-border-radius: 4px;
+          -moz-border-radius: 4px;
+          border-radius: 4px;
+          -webkit-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
+          -moz-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
+          box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
+          *zoom: 1;
+        } 
+        
+        .navbar-fixed-top .navbar-inner, .navbar-static-top .navbar-inner {
+            border-bottom-color: #{!customSettings.Navbar_Bottom_Colour__c};                       
+        }        
+          
+        
+        .navbar .divider-vertical {
+          height: 40px;
+          margin: 0 9px;
+          border-left: 1px solid #{!customSettings.Navbar_Top_Colour__c};
+          border-right: 1px solid #ffffff;
+        }   
+        
+        .nav-collapse .nav > li > a:hover,
+          .nav-collapse .dropdown-menu a:hover {
+            background-color: #{!customSettings.Navbar_Top_Colour__c};
+          }  
+          
+          .nav-collapse .navbar-form,
+          .nav-collapse .navbar-search {
+            float: none;
+            padding: 10px 15px;
+            margin: 10px 0;
+            border-top: 1px solid #{!customSettings.Navbar_Top_Colour__c};
+            border-bottom: 1px solid #{!customSettings.Navbar_Top_Colour__c};
+            -webkit-box-shadow: inset 0 1px 0 rgba(255,255,255,.1), 0 1px 0 rgba(255,255,255,.1);
+            -moz-box-shadow: inset 0 1px 0 rgba(255,255,255,.1), 0 1px 0 rgba(255,255,255,.1);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,.1), 0 1px 0 rgba(255,255,255,.1);
+          }  
+          
+          
+    <!-- Button Overrides -->
+    
+    
+        .btn-danger {
+          color: #ffffff;
+          text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+          background-color: #{!customSettings.Navbar_Top_Colour__c};
+          *background-color: #{!customSettings.Navbar_Bottom_Colour__c};
+          background-image: -moz-linear-gradient(top, #{!customSettings.Navbar_Top_Colour__c}, #{!customSettings.Navbar_Bottom_Colour__c});
+          background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#{!customSettings.Navbar_Top_Colour__c}), to(#{!customSettings.Navbar_Bottom_Colour__c}));
+          background-image: -webkit-linear-gradient(top, #{!customSettings.Navbar_Top_Colour__c}, #{!customSettings.Navbar_Bottom_Colour__c});
+          background-image: -o-linear-gradient(top, #{!customSettings.Navbar_Top_Colour__c}, #{!customSettings.Navbar_Bottom_Colour__c});
+          background-image: linear-gradient(to bottom, #{!customSettings.Navbar_Top_Colour__c}, #{!customSettings.Navbar_Bottom_Colour__c});
+          background-repeat: repeat-x;
+          border-color: #{!customSettings.Navbar_Bottom_Colour__c} #{!customSettings.Navbar_Bottom_Colour__c} #802420;
+          border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+          filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff{!customSettings.Navbar_Top_Colour__c}', endColorstr='#ff{!customSettings.Navbar_Bottom_Colour__c}', GradientType=0);
+          filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
+        }
+        
+        .btn-danger:hover,
+        .btn-danger:active,
+        .btn-danger.active,
+        .btn-danger.disabled,
+        .btn-danger[disabled] {
+          color: #ffffff;
+          background-color: #{!customSettings.Navbar_Bottom_Colour__c};
+          *background-color: #a9302a;
+        }
+        
+        .btn-danger:active,
+        .btn-danger.active {
+          background-color: #942a25 \9;
+        }              
+                                      
+          
+    <!-- Navbar buttons and links -->
+    
+        .navbar .nav > .active > a,
+        .navbar .nav > .active > a:hover,
+        .navbar .nav > .active > a:focus {
+          color: #{!customSettings.Navbar_Text_Colour__c};
+          text-decoration: none;
+          background-color: #{!customSettings.Navbar_Selected_Page__c};
+          -webkit-box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.125);
+          -moz-box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.125);
+          box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.125);
+        } 
+        
+        .navbar .btn-navbar {
+          display: none;
+          float: right;
+          padding: 7px 10px;
+          margin-left: 5px;
+          margin-right: 5px;
+          color: #{!customSettings.Navbar_Text_Colour__c};
+        #  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+          text-shadow: none;
+          background-color: #ea9191;
+          background-image: -moz-linear-gradient(top, #f2f2f2, #{!customSettings.Navbar_Selected_Page__c});
+          background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#f2f2f2), to(#{!customSettings.Navbar_Selected_Page__c}));
+          background-image: -webkit-linear-gradient(top, #f2f2f2, #{!customSettings.Navbar_Selected_Page__c});
+          background-image: -o-linear-gradient(top, #f2f2f2, #{!customSettings.Navbar_Selected_Page__c});
+          background-image: linear-gradient(to bottom, #f2f2f2, #{!customSettings.Navbar_Selected_Page__c});
+          background-repeat: repeat-x;
+          filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fff2f2f2', endColorstr='#ff{!customSettings.Navbar_Selected_Page__c}', GradientType=0);
+          border-color: #{!customSettings.Navbar_Selected_Page__c} #{!customSettings.Navbar_Selected_Page__c} #920000;
+          border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+          *background-color: #{!customSettings.Navbar_Selected_Page__c};
+          /* Darken IE7 buttons by default so they stand out more given they wont have borders */
+        
+          filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+          -webkit-box-shadow: inset 0 1px 0 rgba(255,255,255,.1), 0 1px 0 rgba(255,255,255,.075);
+          -moz-box-shadow: inset 0 1px 0 rgba(255,255,255,.1), 0 1px 0 rgba(255,255,255,.075);
+          box-shadow: inset 0 1px 0 rgba(255,255,255,.1), 0 1px 0 rgba(255,255,255,.075);
+        }
+                   
+          
+        .navbar .btn-navbar:hover,
+        .navbar .btn-navbar:active,
+        .navbar .btn-navbar.active,
+        .navbar .btn-navbar.disabled,
+        .navbar .btn-navbar[disabled] {
+          color: #ffffff;
+          background-color: #{!customSettings.Navbar_Selected_Page__c};
+          *background-color: #c50000;
+        }
+                  
+          
+        .navbar .nav li.dropdown.open > .dropdown-toggle,
+        .navbar .nav li.dropdown.active > .dropdown-toggle,
+        .navbar .nav li.dropdown.open.active > .dropdown-toggle {
+          background-color: #{!customSettings.Navbar_Selected_Page__c};
+          color: #{!customSettings.Navbar_Text_Colour__c};
+        }    
+        
+        
+        <!-- Chatter Page -->        
+        .parentPost {
+            border-bottom: 1px solid #{!customSettings.Navbar_Top_Colour__c};
+         } 
+         
+        .chatterPostBox {
+            border-bottom:1px solid #{!customSettings.Navbar_Top_Colour__c};
+        } 
+            
+    <!-- Customer Detail Page -->
+    
+        .customerSectionHeader {
+            border-bottom:1px solid #{!customSettings.Navbar_Top_Colour__c}; 
+        }                                         
+        
+                      
+    </style>                        
+
+</apex:page>

@@ -1,0 +1,202 @@
+<!--
+
+// Copyright 2013, Kevin Akermanis - Sales Engineering, Salesforce.com Inc.
+// All rights reserved.
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//
+// - Redistributions of source code must retain the above copyright notice,
+//   this list of conditions and the following disclaimer.
+// - Redistributions in binary form must reproduce the above copyright notice,
+//   this list of conditions and the following disclaimer in the documentation
+//   and/or other materials provided with the distribution.
+// - Neither the name of the salesforce.com nor the names of its contributors
+//   may be used to endorse or promote products derived from this software
+//   without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+// IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
+// FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+// DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+// SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+// CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+// OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+-->
+<apex:page docType="html-5.0" cache="false" standardStylesheets="false"
+    sidebar="false"
+    showHeader="false" showChat="false"
+    controller="StoreConnectController">
+    
+    <head>
+        <title>{!$Organization.name} Store Connect</title>                               
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>         
+        <link href="{!URLFOR($Resource.storeConnect_bootstrap, 'css/bootstrap.min.css')}" rel="stylesheet" media="screen"/>                                
+        <link href="{!URLFOR($Resource.storeConnect_bootstrap, 'css/bootstrap-responsive.css')}" rel="stylesheet"/>      
+        
+        <style>
+        
+            html {
+               min-height: 100%;
+            }        
+            
+            body {                
+                padding-top:60px;
+                padding-bottom: 40px;             
+                                                
+                /* BACKGROUND GRADIENT */                                
+                background: #c9c9c9; /* Old browsers */
+                background: -moz-linear-gradient(top,  #c9c9c9 0%, #f9f9f9 100%); /* FF3.6+ */
+                background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#c9c9c9), color-stop(100%,#f9f9f9)); /* Chrome,Safari4+ */
+                background: -webkit-linear-gradient(top,  #c9c9c9 0%,#f9f9f9 100%); /* Chrome10+,Safari5.1+ */
+                background: -o-linear-gradient(top,  #c9c9c9 0%,#f9f9f9 100%); /* Opera 11.10+ */
+                background: -ms-linear-gradient(top,  #c9c9c9 0%,#f9f9f9 100%); /* IE10+ */
+                background: linear-gradient(to bottom,  #c9c9c9 0%,#f9f9f9 100%) no-repeat; /* W3C */
+                filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#c9c9c9', endColorstr='#f9f9f9',GradientType=0 ); /* IE6-9 */                                                
+            }
+
+        </style>                        
+        <link href="{!$Resource.storeConnect_bootstrap_style_override}" rel="stylesheet" />        
+        <apex:include pageName="StoreConnectStyleOverrides"/>                                                                          
+        <meta name="apple-mobile-web-app-capable" content="yes"/>
+        <link rel="icon" type="image/png" href="{$Resource.StoreConnect_Favico}"/>
+        <link rel="apple-touch-icon" href="{!$Resource.StoreConnectAppIcon}" />        
+                                
+        <style>
+
+        .navbar .nav,
+        .navbar .nav > li {
+            float:none;
+            display:inline-block;
+            *display:inline; /* ie7 fix */
+            *zoom:1; /* hasLayout ie7 trigger */
+            vertical-align: top;
+        }
+
+         .navbar-inner {
+            text-align:center;
+        }
+        
+        #nav.affix {
+            position: fixed;
+            top: 0;
+            width: 100%;
+        }
+        
+        .connectIcon {
+            height: 150px;
+            width: 150px;
+            margin:0px auto;   
+            padding-top: 10px;
+            display:none;
+        }
+        
+        .connectText {
+            text-align:center;
+            color: #898989;
+            margin-top: -83px;
+            vertical-align:text-top;
+            display:none;            
+        }
+        
+        .loginBox {
+            display:none;
+        }
+        
+        #loginSpinner {
+            height: 25px;
+            visibility: hidden;
+            display:inline-block;            
+            margin-top: 10px;
+            margin-left: 3px;
+        }
+        
+        #floatingBarsG {
+            margin-top 10px;
+        }
+                                                            
+        </style>        
+    </head>
+    <body>   
+        <script src="{!$Resource.storeConnect_jQuery182_min_js}"></script>
+        <script src="{!URLFOR($Resource.storeConnect_bootstrap, 'js/bootstrap.min.js')}"></script>   
+        <div class="container">
+            <div id="nav-wrapper">
+                <div id="nav" class="navbar navbar-fixed-top">
+                  <div class="navbar-inner">
+                      <div class="container">
+                        <ul class="nav">
+                        </ul>
+                      </div>
+                  </div>     
+                 </div> 
+            </div>
+                             
+            <div class="container" id="connectIconLogin">        
+                <div class="connectIcon" onclick="connectClick()">
+                    <img src="{!$Resource.StoreConnect_login_logo}"/>
+                    <div class="connectText">
+                        <p>Touch to connect</p>
+                    </div>                   
+                </div> <!-- END connectIcon --> 
+                <div class="loginBox span8 offset2" >                
+                    <form class="well form-horizontal">  
+                        <div class="control-group">
+                          <label for="username" class="control-label">Username:</label> 
+                          <div class="controls">
+                              <input id="username" type="text" class="span4" value="{!customSettings.Login_Username__c}"/>                                                  
+                          </div> 
+                        </div>
+                        
+                        <div class="control-group">
+                          <label for="password" class="control-label">Password:</label>
+                          <div class="controls">                          
+                              <input id="password" type="password" class="span4" value="{!customSettings.Login_Password__c}"/>                        
+                          </div>
+                        </div>                        
+
+                        <div class="control-group">
+                            <div class="controls">
+                              <button type="submit" class="btn loginBtn" onclick="formSubmit()">Login</button>
+                              <!--<img src="{!$Resource.StoreConnectSpinner}" class="" id="loginSpinner"/>             -->
+                              <div id="loginSpinner">                                     
+                                  <apex:include pageName="StoreConnectLoadSpinner"/>                                  
+                              </div>
+                                               
+                            </div>
+                        </div>                                                    
+                    </form>                                 
+                </div>                                                                                                                            
+            </div> <!-- END connectIconLogin -->          
+        </div> 
+                        
+        <script> 
+            $(document).ready(function() {                                
+                  $('.connectIcon').fadeIn(2000, function() {
+                      $('.connectText').fadeIn(800, function() {
+    
+                      }); 
+                  });                                
+            });  
+            
+            function connectClick() {                                
+                  $('.loginBox').slideDown('slow', function() {
+                    // Animation complete.
+                  });
+            }    
+            
+            function formSubmit() {
+                event.preventDefault();
+                $("#loginSpinner").css('visibility', 'visible');                                
+                $(".loginBtn").addClass('disabled');
+                var username = $("#username").val();
+                var password = $("#password").val();             
+                window.location = 'https://login.salesforce.com/?startURL=%2Fapex%2FStoreConnectChatter&un=' + username + '&pw=' + password;
+            }                                        
+        </script>              
+    </body>
+</apex:page>

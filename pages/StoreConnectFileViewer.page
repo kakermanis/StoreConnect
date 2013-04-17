@@ -1,0 +1,91 @@
+<!--
+
+// Copyright 2013, Kevin Akermanis - Sales Engineering, Salesforce.com Inc.
+// All rights reserved.
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//
+// - Redistributions of source code must retain the above copyright notice,
+//   this list of conditions and the following disclaimer.
+// - Redistributions in binary form must reproduce the above copyright notice,
+//   this list of conditions and the following disclaimer in the documentation
+//   and/or other materials provided with the distribution.
+// - Neither the name of the salesforce.com nor the names of its contributors
+//   may be used to endorse or promote products derived from this software
+//   without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+// IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
+// FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+// DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+// SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+// CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+// OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+-->
+<apex:page controller="StoreConnectFileViewerController"
+    cache="false" standardStylesheets="false"
+    sidebar="false"
+    showHeader="false" showChat="false">        
+    <head>
+        <link href="{!URLFOR($Resource.storeConnect_bootstrap, 'css/bootstrap.min.css')}" rel="stylesheet" media="screen"/>
+        <link href="{!$Resource.storeConnect_bootstrap_style_override}" rel="stylesheet" />  
+        <apex:include pageName="StoreConnectStyleOverrides"/>                                                                      
+            <style>
+                #loadingSpinner {
+                  position: fixed;
+                  top: 30%;
+                  left: 50%;
+                }
+                
+                body {
+                    padding-top:60px;
+                    padding-bottom: 40px;                    
+                }                
+            </style>
+    </head>
+    <body>
+        <script src="{!$Resource.storeConnect_jQuery182_min_js}"></script>         
+        <div class="navbar navbar navbar-fixed-top">
+          <div class="navbar-inner">
+            <div class="container">
+                <ul class="nav">
+                  <li class="active"><a class="backBtn" href="/apex/StoreConnectChatter"><i class="icon-chevron-left icon-white"></i>Back</a></li>
+                </ul>
+            </div>
+          </div>
+        </div>
+    
+        <div class="container">    
+                <div id="loadingSpinner" class="row">                
+                <!-- TODO - Include the Spinner Page in here -->
+                </div>    
+                <div id="iFrameContainer" class="row hidden">        
+                    <iframe src="{!targetUrl}" seamless="true" frameborder="0" align="left" marginwidth="2" width="150" onload="finishedLoading()"/>                                             
+                </div>
+        </div>                
+        <script>    
+            function finishedLoading() {
+                $("#loadingSpinner").slideUp();
+                $("#iFrameContainer").removeClass('hidden');
+                $("#iFrameContainer").slideDown();            
+                
+            }
+            var setupNavLinks = new function() {                  
+                $(".backBtn").on("click", function(event){
+                    event.preventDefault();
+                    var targetUrl = $(this).attr('href');                                                        
+                    window.location = targetUrl; 
+                });
+            }    
+        
+            $(document).ready(function() {
+                setupNavLinks;                                                                                              
+            });         
+        </script>  
+    </body>     
+</apex:page>

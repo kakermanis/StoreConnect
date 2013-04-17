@@ -1,0 +1,318 @@
+<!--
+
+// Copyright 2013, Kevin Akermanis - Sales Engineering, Salesforce.com Inc.
+// All rights reserved.
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//
+// - Redistributions of source code must retain the above copyright notice,
+//   this list of conditions and the following disclaimer.
+// - Redistributions in binary form must reproduce the above copyright notice,
+//   this list of conditions and the following disclaimer in the documentation
+//   and/or other materials provided with the distribution.
+// - Neither the name of the salesforce.com nor the names of its contributors
+//   may be used to endorse or promote products derived from this software
+//   without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+// IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
+// FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+// DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+// SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+// CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+// OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+-->
+<apex:page cache="false" standardStylesheets="false"
+    sidebar="false"
+    showHeader="false" showChat="false"
+    controller="StoreConnectChatterController" docType="html-5.0">
+    <apex:composition template="StoreConnect">
+        <apex:includeScript value="{!$Resource.storeConnect_iCanHaz}"/>
+        <apex:define name="pageContent">                        
+            <style>
+                
+                .profileImage {
+                    margin: 4px;
+                    width: 40px;
+                    vertical-align: top;            
+                }
+                
+                .postContent {
+                    padding-left: 50px;
+                    position: relative;
+                }
+                
+                .postContent img.profileImage {
+                    left: 0;
+                    position: absolute;
+                    top: 0;
+                }                 
+                
+                .postContentBlock {
+                    padding-left: 90px;
+                    position: relative;
+                    height: 100%;
+                    padding-bottom: 43px;                    
+                }
+                
+                .contentThumbnail {
+                    left: 0;
+                    position: absolute;
+                    top: 0;
+                    float: right;
+                    height: 60px;
+                }                
+                                               
+                .postUserName {
+                    font-weight: bold;                    
+                }   
+                
+                .postUrlLink a {
+                    display: inline-block; 
+                    max-width: 100px; 
+                    vertical-align: middle;
+                }
+                                             
+                .postCommentsWrapper {
+                    #width:85%;
+                    padding:4px;
+                    font-size:0.95em;
+                    position:relative;
+                    left:1.3em;                                        
+                }
+                
+                .commentImageBlock {
+                    display:inline-block;
+                    vertical-align:top;
+                    float:right;
+                    position:relative;
+                    right:1em;
+                }  
+                
+                .parentPost {
+                    margin-bottom: 15px;
+                } 
+                
+                .singlePost {
+                    padding-bottom: 3px;
+                    border-bottom: 1px solid #d0d0d0;
+                    margin-bottom: 5px;               
+                } 
+                
+                .postCommentsWrapper .singlePost {
+                    border-bottom: none;
+                }
+                
+                .chatterPostBox {
+                    margin-top: 5px;
+                    margin-bottom: 15px;
+                    padding-bottom: 8px;
+                }
+                
+                .chatterPostBox a {
+                    margin-top: 5px;
+                }
+                
+                .postActions {
+                    min-height: 25px;
+                    background-color: #FFFFFF;
+                    margin: 3px 0px 3px 0px;
+                    padding: 5px 3px 5px 3px;
+                }
+                
+                .commentBtn {
+                    padding-right: 25px;
+                    border-right: 1px solid #d0d0d0;
+                }
+                
+                .likeBtn {
+                    padding-left: 35px;
+                }
+                
+                .commentPostBox {
+                    padding-top: 15px;
+                    padding-bottom: 6px;
+                    margin-left: 5px;
+                    margin-right: 5px;
+                    display: none;
+                }
+                
+                .commentPostBox a {
+                    margin-top 3px;
+                }
+                
+                .commentPostBox textarea {                
+                    margin-bottom: 10px;
+                }
+            </style>
+            
+<!-- Inserted code from webpage -->
+
+<div class="row span10 offset1 chatterPostBox form-inline">
+    <textarea id="chatterStatusText" rows="2" class="span10" placeholder="What are you working on?"></textarea>
+    <a id="statusShareBtn" class="btn btn-danger pull-right">Share</a>
+</div>
+
+<div id="feed-display-div" class="row offset1 span10">
+  <apex:repeat value="{!newsFeedForDisplay}" var="feedItemInfo">
+      <div class="parentPost row">
+        <div class="singlePost"> 
+            <div class="postContent">
+               <apex:image styleClass="profileImage" url="{!feedItemInfo.feedItem.photoUrl}"/>
+               <div class="postUserName">{!feedItemInfo.userName}</div>
+               <div class="postText"><apex:outputText value="{!feedItemInfo.formattedText}" escape="false"/></div>               
+               <apex:outputPanel layout="block" styleClass="postUrlLink" rendered="{!IF(feedItemInfo.linkUrl == null, false, true)}" >              
+                   <b><a href="{!feedItemInfo.linkUrl}">{!feedItemInfo.linkTitle}</a></b>             
+               </apex:outputPanel>
+        
+               <apex:outputPanel styleClass="postContentBlock" layout="block" rendered="{!IF(feedItemInfo.contentDownloadUrl != null && feedItemInfo.imageUrl != null && feedItemInfo.hasImagePreview, true, false)}" >          
+                   <a href="{!feedItemInfo.contentDownLoadUrl}" target="_blank">
+                       <apex:image styleClass="contentThumbnail" url="{!feedItemInfo.imageUrl}"/> {!feedItemInfo.contentTitle }
+                   </a>                 
+               </apex:outputPanel>                                                
+            </div>                              
+       </div>
+
+       <apex:outputPanel layout="block" styleClass="postCommentsWrapper" rendered="{!IF(feedItemInfo.commentCount > 0, true, false)}">
+           <apex:repeat value="{!feedItemInfo.comments}" var="commentInfo">
+               <div class="singlePost">                
+                    <div class="postContent">
+                       <apex:image styleClass="profileImage" url="{!commentInfo.comment.user.photo.smallPhotoUrl}"/>
+                       <div class="postUserName">{!commentInfo.userName}</div>
+                       <div class="postText"><apex:outputText value="{!commentInfo.formattedText}" escape="false"/></div>
+                    </div>                               
+                   <apex:outputPanel layout="block" styleClass="commentImageBlock" rendered="{!IF(commentInfo.imageUrl == null, false, true)}" >
+                       <apex:image style="margin:4px" width="100" url="{!commentInfo.imageUrl}"/>                 
+                       <div style="clear: both;"/>
+                   </apex:outputPanel>
+               </div>
+           </apex:repeat>
+       </apex:outputPanel>
+       <div parentId="" class="postActions row span10 pagination-centered">
+           <a href="#" parentPostId="{!feedItemInfo.postId}" class="commentBtn"><i class="icon-share-alt"/> Comment</a>
+           <a href="#" parentPostId="{!feedItemInfo.postId}" class="likeBtn"><i class="icon-thumbs-up"/> Like</a>
+           
+            <div class="row commentPostBox form-inline">
+                <textarea parentPostId="{!feedItemInfo.postId}" rows="2" class="span8" placeholder="Comment..."></textarea>
+                <a parentPostId="{!feedItemInfo.postId}" class="btn btn-danger pull-right commentSubmitBtn">Comment</a>
+            </div>                                 
+       </div>       
+     </div> <!-- End ParentPost -->   
+   </apex:repeat>
+</div>
+<!-- END inserted code from webpage -->                                           
+            
+        </apex:define>
+    </apex:composition>
+    
+    
+    <!-- All iCanHaz / Mustache / Dynamic HTML templates will live in here -->
+    <div id="dynamicTemplates">              
+        <script id="contactList" type="text/html">     
+            <ul>
+            {{#contacts}}
+                <li><a class="searchResultItem" href="#" contactId="{{Id}}">
+                        <dl>
+                            <dt>{{FirstName}} {{LastName}}</dt>
+                            <dd>{{Email}}</dd>
+                        </dl>
+                    </a>
+                </li>
+            {{/contacts}}
+            </ul>                                                                                          
+        </script>        
+    </div> <!-- END iCanHaz templates -->    
+    
+    
+    <script>        
+        function loadFeedCallback(result, event) {
+            console.log('In the loadFeedCallback : ' + result.toSource());
+        }
+    
+        function loadChatterNewsFeed() {                
+            Visualforce.remoting.Manager.invokeAction(
+                '{!$RemoteAction.StoreConnectChatterController.loadNewsFeed}', 
+                loadFeedCallback, 
+                {escape: false}
+            );                
+        }   
+        
+        
+        function handleChatterPostCallback(result, event) {
+            console.log('back from chatter post remote action');            
+            window.location = '/apex/StoreConnectChatter';        
+        } 
+                    
+        var setupNavLinks = new function() {                  
+            $(".navLink").on("click", function(event){
+                event.preventDefault();
+                var targetUrl = $(this).attr('targetPage');                                                        
+                window.location = targetUrl; 
+            });
+
+            $(".postContentBlock a").on("click", function(event) {
+                event.preventDefault();
+                var targetContent = $(this).attr('href');                
+                window.location = '/apex/StoreConnectFileViewer?targetUrl=' + targetContent;                                                         
+            });
+            
+            $(".postActions a").on("click", function(event) {
+                event.preventDefault();
+            });
+            
+            $(".commentBtn").on("click", function(event) { 
+                console.log('Clicked on a comment button');           
+                $(this).siblings(".commentPostBox").slideToggle();    
+            });
+            
+            $("#statusShareBtn").on("click", function(event) {
+                var statusText = $("#chatterStatusText").val();                
+                if ('' != statusText) {
+                    console.log('You have a chatter status of: ' + statusText);                                
+                    Visualforce.remoting.Manager.invokeAction(
+                        '{!$RemoteAction.StoreConnectChatterController.doStatusPost}',
+                        statusText, 
+                        handleChatterPostCallback, 
+                        {escape: false}
+                    );                
+                }                                                             
+            });
+                        
+            $(".commentSubmitBtn").on("click", function(event) {
+                var commentParentId = $(this).attr('parentPostId');
+                var commentText = $(this).prev('textarea').val();                
+                console.log('You are commenting on post: ' + commentParentId + ' with comment of: '  + commentText); 
+                                
+                if ('' != commentText) {
+                    Visualforce.remoting.Manager.invokeAction(
+                        '{!$RemoteAction.StoreConnectChatterController.doCommentPost}',
+                        commentParentId, commentText,
+                        handleChatterPostCallback, 
+                        {escape: false}
+                    );                
+                }                                                                                               
+            });
+                        
+            $(".likeBtn").on("click", function(event) {
+                var postId = $(this).arrt('parentPostId');
+                
+                    Visualforce.remoting.Manager.invokeAction(
+                        '{!$RemoteAction.StoreConnectChatterController.doLikePost}',
+                        postId,
+                        handleChatterPostCallback, 
+                        {escape: false}
+                    );                                                 
+            });
+        }    
+    
+        $(document).ready(function() {
+            setupNavLinks;                                                                                              
+        });     
+    </script>    
+        
+</apex:page>
